@@ -100,4 +100,4 @@ def _get_place_name(num: int) -> str:
 
     return "".join(parts)
 
-print(get_number_name(int(input("enter a number: ")))) # any number up until 10^10^33 which has more digits than the mass of the sun in kilograms times 500
+print(get_number_name(int(input("enter a number: ")))) # any number between 10^10^33 and -10^10^33 which have more than 500 time more digits than the mass of the sun in kilograms
