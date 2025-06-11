@@ -66,29 +66,27 @@ def _get_place_name(num: int) -> str:
     groups = groups
 
     for i, group in [*enumerate(groups)][::-1]:
+        group_parts = []
+
         if i != 0 and group != 0:
-            parts.append(nexts[i])
-            if group != 0:
-                group -= 1
+            group_parts.append(nexts[i])
+            group -= 1
 
         if 0 < group < 10:
-            parts.append(special_names[group])
-            continue
+            group_parts.append(special_names[group])
+        else:
+            unit = group % 10
+            ten = (group // 10) % 10
+            hundred = (group // 100) % 10
 
-        unit = group % 10
-        ten = (group // 10) % 10
-        hundred = (group // 100) % 10
-
-        if unit > 0:
-            next_add = None if ten == 0 and hundred == 0 else hundreds_add[hundred] if ten == 0 else tens_add[ten]
-            parts.append(next((units[unit] + c for c in units_add[unit] if c in next_add), units[unit]))
-        if ten > 0:
-            parts.append(tens[ten])
-        if hundred > 0:
-            parts.append(hundreds[hundred])
-
-    if len(parts) == 0:
-        print(num)
+            if hundred > 0:
+                group_parts.append(hundreds[hundred])
+            if ten > 0:
+                group_parts.append(tens[ten])
+            if unit > 0:
+                next_add = None if ten == 0 and hundred == 0 else hundreds_add[hundred] if ten == 0 else tens_add[ten]
+                group_parts.append(next((units[unit] + c for c in units_add[unit] if c in next_add), units[unit]))
+        parts += group_parts[::-1]
 
     if not parts[-1].endswith("illion"):
         parts.append("illion")
@@ -100,4 +98,5 @@ def _get_place_name(num: int) -> str:
 
     return "".join(parts)
 
-print(get_number_name(int(input("enter a number: ")))) # any number between 10^10^33 and -10^10^33 which have more than 500 time more digits than the mass of the sun in kilograms
+with open("a.txt", "w") as file:
+    file.write(get_number_name(int(input("enter a number: ")))) # any number between 10^10^33 and -10^10^33 which have more than 500 time more digits than the mass of the sun in kilograms
