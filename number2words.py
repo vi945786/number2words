@@ -27,9 +27,8 @@ def get_number_name(num: int) -> str:
                 name += "and "
 
         if group[1] != 0:
-            tens_ones = group[1]
-            if tens_ones < 20:
-                name += f"{specials[tens_ones]} "
+            if group[1] < 20:
+                name += f"{specials[group[1]]} "
             else:
                 if (ten := group[1] // 10 % 10) != 0:
                     name += f"{tens_place[ten]} "
@@ -49,7 +48,7 @@ def _get_place_name(num: int) -> str:
     tens_add = ("", "n", "ms", "ns", "ns", "ns", "n", "n", "mx", "")
     hundreds = ("", "centi", "ducenti", "trecenti", "quadringenti", "quingenti", "sescenti", "septingenti", "octingenti", "nongenti")
     hundreds_add = ("", "nx", "n", "ns", "ns", "ns", "n", "n", "mx", "")
-    nexts = ("", "mill", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto", "ronto", "quecto")
+    bigs = ("", "mill", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto", "ronto", "quecto")
 
     if num == 0:
         return special_names[0]
@@ -69,7 +68,7 @@ def _get_place_name(num: int) -> str:
         group_parts = []
 
         if i != 0 and group != 0:
-            group_parts.append(nexts[i])
+            group_parts.append(bigs[i])
             group -= 1
 
         if 0 < group < 10:
@@ -98,5 +97,4 @@ def _get_place_name(num: int) -> str:
 
     return "".join(parts)
 
-with open("a.txt", "w") as file:
-    file.write(get_number_name(int(input("enter a number: ")))) # any number between 10^10^33 and -10^10^33 which have more than 500 time more digits than the mass of the sun in kilograms
+print(get_number_name(int(input("enter a number: ")))) # any number between 10^10^33 and -10^10^33 which have more than 500 time more digits than the mass of the sun in kilograms
