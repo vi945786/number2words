@@ -17,10 +17,13 @@ _PLACE_HUNDREDS_RULES = ("", "nx", "n", "ns", "ns", "ns", "n", "n", "mx", "")
 _PLACE_BIGS = ("", "mill", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto", "ronto", "quecto")
 _PLACE_ILLION = "illion"
 
+def _split_number(num: int) -> Tuple[int, int, int]:
+    return num // 100 % 10, num // 10 % 10, num % 10
+
 def _get_groups(num: int) -> List[Tuple[int, int, int]]:
     groups = []
     while num > 0:
-        groups.append((num // 100 % 10, num // 10 % 10, num % 10))
+        groups.append(_split_number(num))
         num //= 1000
     return groups
 
@@ -131,7 +134,7 @@ def _get_place_name(power: int) -> str:
 
         if i != 0 and group != 0:
             group_parts.append(_PLACE_BIGS[i])
-            group -= 1
+            group = _split_number(group[0]*100 + group[1]*10 + group[2] - 1)
 
         if sum(group[:2]) == 0:
             group_parts.append(_PLACE_SPECIALS[group[2]-1])
