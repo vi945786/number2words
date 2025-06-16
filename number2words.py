@@ -2,9 +2,11 @@ import sys
 from typing import Tuple, List
 
 _NORMAL_UNITS = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
-_NORMAL_TENS = ("", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+_NORMAL_TENS = ("", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
 _NORMAL_SPECIALS = ("ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
 _NORMAL_HUNDRED = "hundred"
+
+_FRACTION_AND = "and"
 
 _PLACE_THOUSAND = "thousand"
 _PLACE_SPECIALS = ("m", "b", "tr", "quadr", "quint", "sext", "sept", "oct", "non")
@@ -56,11 +58,44 @@ def get_number_name(num: str) -> str:
     name = _get_normal_name(abs(int(normal)))
 
     if len(fraction.strip("0")) != 0:
-        name += " point " + ('zero ' * _count_leading_zeros(fraction)) + _get_normal_name(int(fraction.rstrip('0')))
+        if name == "zero":
+            name = ""
+        else:
+            name += f" {_FRACTION_AND} "
+        name += _get_fraction_name(fraction.rstrip('0'))
 
     if num[0] == "-" and name != "zero":
         name = f"negative {name}"
 
+    return name
+
+def _get_place_amount(amount):
+    match amount:
+        case 0:
+            return ""
+        case 1:
+            return _NORMAL_TENS[1]
+        case 2:
+            return _NORMAL_HUNDRED
+
+def _get_fraction_name(fraction: str):
+    power = len(fraction) // 3
+    amount = len(fraction) % 3
+    num = int(fraction)
+
+    amount_name = ""
+    if power == 0:
+        denominator = _get_place_amount(amount)
+    else:
+        denominator = _get_place_name(power)
+        amount_name = _get_place_amount(amount)
+
+    name = f"{_get_normal_name(num)} "
+    if amount_name:
+        name += f"{amount_name}-"
+    name += denominator + "th"
+    if num != 1:
+        name += "s"
     return name
 
 def _get_normal_name(num: int) -> str:
@@ -76,8 +111,6 @@ def _get_normal_name(num: int) -> str:
             name += f"{_NORMAL_UNITS[hundreds]} {_NORMAL_HUNDRED} "
 
         if group[1] + group[2] != 0:
-            if len(name) != 0:
-                name += "and "
             if 1 <= group[1] < 2:
                 name += f"{_NORMAL_SPECIALS[group[2]]} "
             else:
@@ -154,14 +187,15 @@ def _get_place_name(power: int) -> str:
     return "".join(parts)
 
 def test():
-    assert get_number_name("0.123") == "zero point one hundred and twenty-three"
-    assert get_number_name("12345678.0") == "twelve million, three hundred and forty-five thousand, six hundred and seventy-eight"
-    assert get_number_name("-1.1") == "negative one point one"
-    assert get_number_name("0.01") == "zero point zero one"
+    assert get_number_name("0.123") == "one hundred twenty-three thousandths"
+    assert get_number_name("0.001") == "one thousandth"
+    assert get_number_name("12345678.0") == "twelve million, three hundred forty-five thousand, six hundred seventy-eight"
+    assert get_number_name("0.01") == "one hundredth"
     assert get_number_name("0") == "zero"
     assert get_number_name("-0") == "zero"
-    assert get_number_name("-0.1") == "negative zero point one"
-    assert get_number_name("-0.1000000000000") == "negative zero point one"
+    assert get_number_name("-0.1") == "negative one tenth"
+    assert get_number_name("-0.1000000000000") == "negative one tenth"
+    assert get_number_name("-123456.00005") == "negative one hundred twenty-three thousand, four hundred fifty-six and five hundred-thousandths"
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
