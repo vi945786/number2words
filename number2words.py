@@ -177,7 +177,7 @@ def _get_place_name(power: int) -> str:
             if group[1] > 0:
                 group_parts.append(_PLACE_TENS[group[1]])
             if group[2] > 0:
-                group_parts.append(_PLACE_UNITS[group[0]] + _get_place_rule(*group))
+                group_parts.append(_PLACE_UNITS[group[2]] + _get_place_rule(*group))
 
         parts += group_parts[::-1]
 
